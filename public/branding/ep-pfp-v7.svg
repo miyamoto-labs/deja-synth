@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00F0A0" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#00F0A0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0A0"/>
+      <stop offset="100%" stop-color="#00D888"/>
+    </linearGradient>
+    <linearGradient id="dimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0A0" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#00D888" stop-opacity="0.15"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="80" fill="#0F1118"/>
+  <circle cx="200" cy="200" r="150" fill="url(#glow)"/>
+
+  <!-- Shared vertical stem — the E and P share one backbone -->
+  <rect x="95" y="90" width="38" height="220" rx="4" fill="url(#greenGrad)"/>
+
+  <!-- E horizontal bars — extend left from the stem -->
+  <rect x="30" y="90" width="103" height="32" rx="4" fill="url(#dimGrad)"/>
+  <rect x="45" y="184" width="88" height="28" rx="4" fill="url(#dimGrad)"/>
+  <rect x="30" y="278" width="103" height="32" rx="4" fill="url(#dimGrad)"/>
+
+  <!-- P bowl — extends right from the stem -->
+  <path d="M133,90 L220,90 C300,90 300,200 220,200 L133,200" fill="none" stroke="url(#greenGrad)" stroke-width="32" stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- Small label -->
+  <text x="200" y="355" text-anchor="middle" font-family="SF Pro Display, system-ui, -apple-system, Helvetica, Arial, sans-serif" font-weight="500" font-size="14" fill="#00F0A0" opacity="0.3" letter-spacing="8">EASYPOLY</text>
+</svg>

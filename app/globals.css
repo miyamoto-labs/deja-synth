@@ -1,0 +1,410 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Font Imports ─────────────────────────────── */
+/* Clash Display & General Sans kept for dashboard compatibility */
+@import url('https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600,700&display=swap');
+
+/* ── Base Layer ───────────────────────────────── */
+@layer base {
+  :root {
+    /* Déjà Brand Tokens */
+    --deja-cream:       #F5EFE0;
+    --deja-warm-white:  #FAF7F2;
+    --deja-amber:       #C8843A;
+    --deja-amber-light: #E4A95A;
+    --deja-amber-glow:  rgba(200,132,58,0.15);
+    --deja-dusty-rose:  #C4967A;
+    --deja-brown-dark:  #2C1F14;
+    --deja-brown-mid:   #3D2A18;
+    --deja-brown-soft:  #8B6347;
+    --deja-sage:        #7A8C6E;
+    --deja-charcoal:    #141009;
+
+    /* Legacy EasyPoly tokens (dashboard compatibility) */
+    --ep-bg: #08090E;
+    --ep-surface: #0F1118;
+    --ep-card: #151823;
+    --ep-card-hover: #1A1E2E;
+    --ep-border: #1E2235;
+    --ep-border-bright: #2A3050;
+
+    /* Accent — now maps to Déjà amber */
+    --accent: 0 0% 96.1%;
+    --ep-green: #00F0A0;
+    --accent-bright: #E4A95A;
+    --accent-dim: #8B6347;
+    --accent-muted: rgba(200,132,58,0.15);
+    --accent-glow: rgba(200,132,58,0.25);
+
+    /* Text */
+    --text-primary: #E8ECF4;
+    --text-secondary: #8B92A8;
+    --text-muted: #505672;
+
+    /* Conviction */
+    --conviction-high: #7A8C6E;
+    --conviction-medium: #F0B000;
+    --conviction-low: #FF4060;
+
+    /* PnL */
+    --profit: #7A8C6E;
+    --loss: #FF4060;
+
+    /* Déjà grain texture */
+    --noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--deja-charcoal);
+    color: var(--deja-cream);
+    font-family: 'Jost', system-ui, sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  ::selection {
+    background-color: rgba(200,132,58,0.3);
+    color: #F5EFE0;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--deja-brown-soft);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--deja-amber);
+  }
+
+  /* Number rendering */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+/* ── Component Layer ──────────────────────────── */
+@layer components {
+  /* Glass card effect */
+  .glass {
+    background: rgba(15, 17, 24, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--ep-border);
+  }
+
+  .glass-bright {
+    background: rgba(21, 24, 35, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--ep-border-bright);
+  }
+
+  /* Card base */
+  .ep-card {
+    background: var(--ep-card);
+    border: 1px solid var(--ep-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    transition: all 0.2s ease;
+  }
+
+  .ep-card:hover {
+    background: var(--ep-card-hover);
+    border-color: var(--ep-border-bright);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(200,132,58,0.04);
+    transform: translateY(-1px);
+  }
+
+  /* Déjà card style */
+  .deja-card {
+    background: var(--deja-brown-mid);
+    border: 1px solid rgba(200,132,58,0.15);
+    transition: all 0.3s ease;
+  }
+
+  .deja-card:hover {
+    border-color: rgba(200,132,58,0.3);
+    background: var(--deja-brown-dark);
+  }
+
+  /* Accent button */
+  .btn-accent {
+    background: var(--deja-amber);
+    color: var(--deja-brown-dark);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    border-radius: 0;
+    padding: 18px 36px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-accent::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--deja-amber-light);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+  }
+
+  .btn-accent:hover::after {
+    transform: translateX(0);
+  }
+
+  .btn-accent span {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    background: transparent;
+    color: var(--deja-cream);
+    opacity: 0.6;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    border: none;
+    padding: 10px 24px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-ghost:hover {
+    opacity: 1;
+    color: var(--deja-amber);
+  }
+
+  /* Danger button */
+  .btn-danger {
+    background: rgba(255, 64, 96, 0.12);
+    color: var(--loss);
+    border: 1px solid rgba(255, 64, 96, 0.2);
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .btn-danger:hover {
+    background: rgba(255, 64, 96, 0.2);
+    border-color: rgba(255, 64, 96, 0.4);
+  }
+
+  /* Filter pill */
+  .filter-pill {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid var(--ep-border);
+    background: transparent;
+    color: var(--text-secondary);
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .filter-pill:hover {
+    border-color: var(--ep-border-bright);
+    color: var(--text-primary);
+  }
+
+  .filter-pill.active {
+    border-color: var(--deja-amber);
+    background: rgba(200,132,58,0.08);
+    color: var(--deja-amber);
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--ep-card) 25%,
+      var(--ep-card-hover) 50%,
+      var(--ep-card) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+    border-radius: 8px;
+  }
+
+  /* Live indicator dot */
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--deja-amber);
+    animation: liveDot 1.5s ease-in-out infinite;
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  /* Badge base */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  /* Conviction gauge track */
+  .gauge-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .gauge-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s ease-out;
+  }
+
+  /* Mesh gradient background (for hero sections) */
+  .mesh-gradient {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(200,132,58,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 80% 50%, rgba(196,150,122,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 60% 40% at 20% 80%, rgba(200,132,58,0.04) 0%, transparent 50%);
+  }
+
+  /* Subtle grid pattern */
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+}
+
+/* ── Utility Layer ────────────────────────────── */
+@layer utilities {
+  .glow {
+    box-shadow: 0 0 30px rgba(200,132,58,0.15), 0 0 60px rgba(200,132,58,0.05);
+  }
+  .glow-sm {
+    box-shadow: 0 0 15px rgba(200,132,58,0.1);
+  }
+  .glow-lg {
+    box-shadow: 0 0 50px rgba(200,132,58,0.2), 0 0 100px rgba(200,132,58,0.08);
+  }
+
+  /* Text gradient */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--deja-amber-light) 0%, var(--deja-amber) 50%, var(--deja-brown-soft) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Profit/Loss text */
+  .text-profit { color: var(--profit); }
+  .text-loss { color: var(--loss); }
+
+  /* Hide scrollbar but keep scroll */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* ── Signal Dot (animated pulse) ─────────────── */
+.signal-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--deja-amber);
+  animation: signalPulse 2s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(200,132,58,0.6);
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+@keyframes signalPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(200,132,58,0.6); }
+  50% { opacity: 0.5; box-shadow: 0 0 12px rgba(200,132,58,0.3); }
+}
+
+@keyframes liveDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

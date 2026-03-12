@@ -1,0 +1,10 @@
+.vercel
+node_modules
+.next
+
+.env
+.env.local
+.env.*.local
+.claude/
+.team-tasks/
+tsconfig.tsbuildinfo

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00F0A0" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#00F0A0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0A0"/>
+      <stop offset="100%" stop-color="#00D888"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="80" fill="#0F1118"/>
+  <circle cx="200" cy="200" r="150" fill="url(#glow)"/>
+
+  <!-- E — rounded/modern style, left side -->
+  <g transform="translate(55, 95)">
+    <rect x="0" y="0" width="34" height="190" rx="17" fill="#00F0A0" opacity="0.3"/>
+    <rect x="0" y="0" width="130" height="34" rx="17" fill="#00F0A0" opacity="0.3"/>
+    <rect x="0" y="78" width="100" height="34" rx="17" fill="#00F0A0" opacity="0.3"/>
+    <rect x="0" y="156" width="130" height="34" rx="17" fill="#00F0A0" opacity="0.3"/>
+  </g>
+
+  <!-- P — rounded/modern, overlapping right, bright -->
+  <g transform="translate(160, 85)">
+    <!-- Stem -->
+    <rect x="0" y="0" width="36" height="210" rx="18" fill="url(#greenGrad)"/>
+    <!-- Bowl — rounded -->
+    <path d="M18,0 Q18,0 36,0 L100,0 Q175,0 175,55 Q175,110 100,110 L36,110 Q18,110 18,110" fill="none" stroke="url(#greenGrad)" stroke-width="36" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Dot accent -->
+  <circle cx="200" cy="340" r="5" fill="#00F0A0" opacity="0.5"/>
+</svg>

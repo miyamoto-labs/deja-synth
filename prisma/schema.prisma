@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agents  Agent[]
+  wallets Wallet[]
+
+  @@map("users")
+}
+
+model Agent {
+  id             String       @id @default(cuid())
+  userId         String
+  name           String
+  status         AgentStatus  @default(CREATED)
+  strategyType   StrategyType
+  strategyConfig Json
+  riskConfig     Json
+  walletId       String       @unique
+  sessionId      String?      // OpenClaw session ID
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  startedAt DateTime?
+  stoppedAt DateTime?
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wallet      Wallet        @relation(fields: [walletId], references: [id])
+  trades      Trade[]
+  performance Performance[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("agents")
+}
+
+enum AgentStatus {
+  CREATED // Initial state
+  RUNNING // Actively trading
+  PAUSED  // Temporarily stopped
+  STOPPED // Permanently stopped
+  ERROR   // Error state
+}
+
+enum StrategyType {
+  TOP_SIGNALS
+  COPY_TRADER
+  CUSTOM
+}
+
+model Wallet {
+  id                  String   @id @default(cuid())
+  userId              String
+  name                String   @unique
+  addressSolana       String
+  addressEthereum     String
+  addressBitcoin      String
+  addressTron         String
+  encryptedPrivateKey String   @db.Text // Encrypted with user-specific key
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agent Agent?
+
+  @@index([userId])
+  @@map("wallets")
+}
+
+model Trade {
+  id          String      @id @default(cuid())
+  agentId     String
+  marketId    String
+  marketTitle String
+  outcome     Outcome
+  orderType   OrderType
+  status      TradeStatus @default(PENDING)
+
+  // Entry
+  entryAmount    Float    // USDC
+  entryPrice     Float    // Price per share
+  entryShares    Float    // Shares purchased
+  entryTimestamp DateTime @default(now())
+
+  // Exit
+  exitAmount    Float?    // USDC received
+  exitPrice     Float?    // Price per share
+  exitShares    Float?    // Shares sold
+  exitTimestamp DateTime?
+
+  // P&L
+  pnl        Float? // USD profit/loss
+  pnlPercent Float? // % return
+
+  // Metadata
+  signalSource     String? // 'easypoly' | 'trader:{id}' | 'custom'
+  signalConfidence Float?  // 0-100
+  reason           String? // Trade rationale
+  error            String? // Error message if failed
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([status])
+  @@index([entryTimestamp])
+  @@map("trades")
+}
+
+enum Outcome {
+  YES
+  NO
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+}
+
+enum TradeStatus {
+  PENDING   // Order submitted
+  OPEN      // Position open
+  CLOSED    // Position closed (win/loss)
+  FAILED    // Order failed
+  CANCELLED // Order cancelled
+}
+
+model Performance {
+  id        String   @id @default(cuid())
+  agentId   String
+  timestamp DateTime @default(now())
+
+  // Balance
+  balance Float // Current USDC balance
+
+  // P&L
+  totalPnL        Float // All-time P&L
+  totalPnLPercent Float // % return on initial capital
+  dailyPnL        Float // Last 24h P&L
+  weeklyPnL       Float // Last 7d P&L
+  monthlyPnL      Float // Last 30d P&L
+
+  // Trade stats
+  totalTrades   Int
+  openPositions Int
+  wins          Int
+  losses        Int
+  winRate       Float // %
+  avgWinSize    Float // Avg profit per win
+  avgLossSize   Float // Avg loss per loss
+
+  // Risk metrics
+  sharpeRatio Float? // (avgReturn - riskFreeRate) / stdDev
+  maxDrawdown Float? // Max % decline from peak
+
+  // Rankings
+  rank Int? // Position in leaderboard
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([timestamp])
+  @@index([rank])
+  @@map("performance")
+}
+
+model Leaderboard {
+  id              String          @id @default(cuid())
+  type            LeaderboardType
+  rank            Int
+  entityId        String // agentId or userId
+  entityName      String
+  totalPnL        Float
+  totalPnLPercent Float
+  winRate         Float
+  totalTrades     Int
+
+  updatedAt DateTime @updatedAt
+
+  @@unique([type, rank])
+  @@index([type])
+  @@map("leaderboard")
+}
+
+enum LeaderboardType {
+  HUMAN // Manual traders
+  AGENT // AI agents
+}

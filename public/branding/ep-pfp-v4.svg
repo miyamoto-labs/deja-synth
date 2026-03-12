@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00F0A0" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#00F0A0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0A0"/>
+      <stop offset="100%" stop-color="#00C880"/>
+    </linearGradient>
+    <clipPath id="eClip">
+      <rect x="0" y="0" width="205" height="400"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="80" fill="#0F1118"/>
+
+  <!-- Glow -->
+  <circle cx="200" cy="200" r="140" fill="url(#glow)"/>
+
+  <!-- Hexagonal frame -->
+  <polygon points="200,50 330,110 330,290 200,350 70,290 70,110" fill="none" stroke="#00F0A0" stroke-width="1.5" opacity="0.1"/>
+
+  <!-- E — left half, clipped -->
+  <g clip-path="url(#eClip)">
+    <text x="70" y="275" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-weight="900" font-size="260" fill="#00F0A0" opacity="0.35">E</text>
+  </g>
+
+  <!-- P — right half, full opacity, overlapping -->
+  <text x="155" y="275" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-weight="900" font-size="260" fill="url(#greenGrad)" opacity="0.9">P</text>
+
+  <!-- Accent bar connecting them -->
+  <rect x="145" y="282" width="110" height="3" rx="1.5" fill="#00F0A0" opacity="0.5"/>
+</svg>

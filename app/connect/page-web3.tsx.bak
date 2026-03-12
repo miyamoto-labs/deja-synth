@@ -1,0 +1,198 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { BrowserProvider } from 'ethers';
+
+const BOT_CALLBACK_URL = process.env.NEXT_PUBLIC_BOT_CALLBACK_URL || 'https://easypoly-bot-production.up.railway.app/callback/wallet';
+
+export default function ConnectPage() {
+  const [status, setStatus] = useState<'idle' | 'connecting' | 'signing' | 'deriving' | 'success' | 'error'>('idle');
+  const [error, setError] = useState('');
+  const [telegramUserId, setTelegramUserId] = useState('');
+  const [walletAddress, setWalletAddress] = useState('');
+
+  useEffect(() => {
+    // Parse Telegram user ID from URL params or Telegram WebApp
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get('user_id') || (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id;
+    if (userId) setTelegramUserId(String(userId));
+  }, []);
+
+  async function connectWallet() {
+    try {
+      setStatus('connecting');
+      setError('');
+
+      // Check for MetaMask or other injected wallet
+      if (!window.ethereum) {
+        throw new Error('No wallet detected. Please install MetaMask or use a Web3 browser.');
+      }
+
+      // Request account access
+      const provider = new BrowserProvider(window.ethereum);
+      await provider.send('eth_requestAccounts', []);
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      setWalletAddress(address);
+
+      setStatus('signing');
+
+      // Sign a message to prove wallet ownership
+      const message = `Sign this message to connect your Polymarket account to EasyPoly.\n\nWallet: ${address}\nTimestamp: ${Date.now()}`;
+      const signature = await signer.signMessage(message);
+
+      setStatus('deriving');
+
+      // Call our API route to derive CLOB credentials
+      const deriveResponse = await fetch('/api/derive-credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          walletAddress: address,
+          signature,
+          message
+        }),
+      });
+
+      if (!deriveResponse.ok) {
+        const errorText = await deriveResponse.text();
+        throw new Error(`Failed to derive credentials: ${errorText}`);
+      }
+
+      const { apiKey, apiSecret, apiPassphrase } = await deriveResponse.json();
+
+      if (!apiKey || !apiSecret || !apiPassphrase) {
+        throw new Error('Invalid credentials received from server');
+      }
+
+      // Send credentials to bot via callback
+      if (!telegramUserId) {
+        throw new Error('Telegram user ID not found. Please open this link from the bot.');
+      }
+
+      const response = await fetch(BOT_CALLBACK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telegramUserId,
+          walletAddress: address,
+          apiKey: apiCreds.key,
+          apiSecret: apiCreds.secret,
+          apiPassphrase: apiCreds.passphrase,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Callback failed: ${text}`);
+      }
+
+      setStatus('success');
+
+      // Close window after 2 seconds
+      setTimeout(() => {
+        window.close();
+      }, 2000);
+
+    } catch (err: any) {
+      console.error('Connection error:', err);
+      setError(err.message || 'Unknown error');
+      setStatus('error');
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black text-white flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold mb-2">🎯 EasyPoly</h1>
+          <p className="text-white/80">Connect your wallet to start betting</p>
+        </div>
+
+        {status === 'idle' && (
+          <div className="space-y-4">
+            <p className="text-sm text-white/70">
+              Connect your Polygon wallet to place bets directly from Telegram.
+              Your funds stay in your wallet — we never hold your money.
+            </p>
+            {!telegramUserId && (
+              <div className="bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-3 text-sm">
+                ⚠️ Please open this link from the Telegram bot
+              </div>
+            )}
+            <button
+              onClick={connectWallet}
+              disabled={!telegramUserId}
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl transition-all transform hover:scale-105"
+            >
+              🔗 Connect Wallet
+            </button>
+            <p className="text-xs text-white/50 text-center">
+              Supported: MetaMask, Coinbase Wallet, Rabby, Trust Wallet
+            </p>
+          </div>
+        )}
+
+        {status === 'connecting' && (
+          <div className="text-center space-y-4">
+            <div className="animate-spin mx-auto w-16 h-16 border-4 border-white/20 border-t-white rounded-full"></div>
+            <p>Connecting to wallet...</p>
+          </div>
+        )}
+
+        {status === 'signing' && (
+          <div className="text-center space-y-4">
+            <div className="animate-spin mx-auto w-16 h-16 border-4 border-white/20 border-t-white rounded-full"></div>
+            <p className="font-bold">Sign the message in your wallet</p>
+            <p className="text-sm text-white/70">
+              This derives your Polymarket API credentials securely.
+              We never see your private key.
+            </p>
+            {walletAddress && (
+              <p className="text-xs text-white/50 break-all">
+                Wallet: {walletAddress}
+              </p>
+            )}
+          </div>
+        )}
+
+        {status === 'success' && (
+          <div className="text-center space-y-4">
+            <div className="text-6xl">✅</div>
+            <h2 className="text-2xl font-bold">Wallet Connected!</h2>
+            <p className="text-white/80">
+              You can now place bets directly from Telegram.
+              This window will close automatically.
+            </p>
+          </div>
+        )}
+
+        {status === 'error' && (
+          <div className="space-y-4">
+            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4">
+              <p className="font-bold mb-2">❌ Connection Failed</p>
+              <p className="text-sm text-white/90">{error}</p>
+            </div>
+            <button
+              onClick={() => {
+                setStatus('idle');
+                setError('');
+              }}
+              className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 rounded-xl transition-all"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+
+        <div className="mt-8 pt-6 border-t border-white/10 text-center">
+          <p className="text-xs text-white/50">
+            Your private key never leaves your wallet.
+            <br />
+            We only derive public API credentials for trading.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

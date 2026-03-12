@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00F0A0" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#00F0A0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F0A0"/>
+      <stop offset="100%" stop-color="#00C880"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="80" fill="#0F1118"/>
+
+  <!-- Subtle glow -->
+  <circle cx="200" cy="200" r="160" fill="url(#glow)"/>
+
+  <!-- Large E — sits behind, slightly left, lighter -->
+  <text x="155" y="270" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-weight="900" font-size="220" fill="#00F0A0" opacity="0.25">E</text>
+
+  <!-- P — overlaps on top, shifted right, full color -->
+  <text x="175" y="260" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-weight="900" font-size="200" fill="url(#greenGrad)">P</text>
+
+  <!-- Thin accent line under -->
+  <line x1="120" y1="310" x2="300" y2="310" stroke="#00F0A0" stroke-width="2" opacity="0.3" stroke-linecap="round"/>
+
+  <!-- Corner accent dots -->
+  <circle cx="60" cy="60" r="3" fill="#00F0A0" opacity="0.15"/>
+  <circle cx="340" cy="60" r="3" fill="#00F0A0" opacity="0.15"/>
+  <circle cx="60" cy="340" r="3" fill="#00F0A0" opacity="0.15"/>
+  <circle cx="340" cy="340" r="3" fill="#00F0A0" opacity="0.15"/>
+</svg>
