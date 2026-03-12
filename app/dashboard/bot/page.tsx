@@ -369,6 +369,7 @@ export default function SynthTradingPage() {
                     onSell={handleSell}
                     isTrading={tradingKey === key}
                     defaultAmount={defaultAmount}
+                    bankroll={usdcBalance}
                   />
                 );
               })}

@@ -44,6 +44,7 @@ interface SynthMarketCardProps {
   isTrading: boolean;
   defaultAmount: number;
   isSelected?: boolean;
+  bankroll?: number | null;
 }
 
 /* ── Constants ────────────────────────────────── */
@@ -110,6 +111,7 @@ export function SynthMarketCard({
   isTrading,
   defaultAmount,
   isSelected,
+  bankroll,
 }: SynthMarketCardProps) {
   const { text: countdown, expired } = useCountdown(market.event_end_time);
   const posCountdown = useCountdown(
@@ -130,6 +132,21 @@ export function SynthMarketCard({
   // YES = UP, NO = DOWN
   const yesPrice = market.best_ask_price || market.polymarket_probability_up;
   const noPrice = 1 - yesPrice;
+
+  // Kelly Criterion (half-Kelly)
+  const kellyAmount = (() => {
+    if (!hasEdge || !bankroll || bankroll <= 0) return null;
+    const synthProb = selectedSide === 'UP' ? market.synth_probability_up : (1 - market.synth_probability_up);
+    const price = selectedSide === 'UP' ? yesPrice : noPrice;
+    if (price <= 0 || price >= 1 || synthProb <= 0 || synthProb >= 1) return null;
+    const b = (1 / price) - 1; // payout odds
+    const p = synthProb;
+    const q = 1 - p;
+    const halfKelly = (b * p - q) / (2 * b);
+    if (halfKelly <= 0) return null;
+    const amount = Math.round(halfKelly * bankroll * 100) / 100;
+    return Math.max(1, Math.min(100, amount));
+  })();
 
   const tfLabel = market.timeframe === 'hourly' ? '1H' : '15M';
   const fullName = `${market.asset === 'BTC' ? 'Bitcoin' : market.asset === 'ETH' ? 'Ethereum' : 'Solana'} Up or Down - ${market.timeframe === 'hourly' ? 'Hourly' : '15 min'}`;
@@ -413,6 +430,24 @@ export function SynthMarketCard({
                       </button>
                     ))}
                   </div>
+                  {kellyAmount !== null && (
+                    <button
+                      onClick={() => setLocalAmount(kellyAmount)}
+                      className={`w-full mt-1.5 flex items-center justify-between px-2 py-1.5 rounded border text-[10px] transition cursor-pointer ${
+                        localAmount === kellyAmount
+                          ? 'bg-purple-500/15 border-purple-500/40 text-purple-300'
+                          : 'bg-purple-500/5 border-purple-500/15 text-purple-400/80 hover:bg-purple-500/10 hover:border-purple-500/25'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1">
+                        <span>⚡</span>
+                        <span className="font-bold">Kelly suggests ${kellyAmount.toFixed(2)}</span>
+                      </span>
+                      <span className="text-text-muted">
+                        Half-Kelly · {(((selectedSide === 'UP' ? market.synth_probability_up : 1 - market.synth_probability_up) * 100)).toFixed(0)}% Synth
+                      </span>
+                    </button>
+                  )}
                 </div>
 
                 {/* Order summary */}
@@ -617,6 +652,24 @@ export function SynthMarketCard({
                 </button>
               ))}
             </div>
+            {kellyAmount !== null && (
+              <button
+                onClick={() => setLocalAmount(kellyAmount)}
+                className={`w-full mt-2 flex items-center justify-between px-3 py-2 rounded-lg border text-xs transition cursor-pointer ${
+                  localAmount === kellyAmount
+                    ? 'bg-purple-500/15 border-purple-500/40 text-purple-300'
+                    : 'bg-purple-500/5 border-purple-500/15 text-purple-400/80 hover:bg-purple-500/10 hover:border-purple-500/25'
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  <span>⚡</span>
+                  <span className="font-bold">Kelly suggests ${kellyAmount.toFixed(2)}</span>
+                </span>
+                <span className="text-text-muted text-[10px]">
+                  Half-Kelly · {(((selectedSide === 'UP' ? market.synth_probability_up : 1 - market.synth_probability_up) * 100)).toFixed(0)}% Synth
+                </span>
+              </button>
+            )}
           </div>
 
           {/* Order summary */}
